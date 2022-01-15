@@ -1,10 +1,10 @@
 package main
 
 import (
-    "fmt"
-    "os"
-    "os/user"
-    "github.com/Soj447/gonk/repl"
+	"fmt"
+	"github.com/Soj447/gonk/repl"
+	"os"
+	"os/user"
 )
 
 const WELCOME_TEXT = `
@@ -30,12 +30,13 @@ const WELCOME_TEXT = `
                \_______/^\______/
 
 `
+
 func main() {
-    user, err := user.Current()
-    if err != nil {
-        panic(err)
-    }
-    
-    fmt.Printf("Hello %s!\n %s", user.Username, WELCOME_TEXT)
-    repl.Start(os.Stdin, os.Stdout)
+	user, err := user.Current()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("Hello %s!\n %s", user.Username, WELCOME_TEXT)
+	repl.Start(os.Stdin, os.Stdout)
 }

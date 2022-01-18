@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/Soj447/gonk/repl"
 	"os"
 	"os/user"
+
+	"github.com/Soj447/gonk/repl"
 )
 
 const WELCOME_TEXT = `
@@ -15,19 +16,9 @@ const WELCOME_TEXT = `
           | |6   ||___|_|_||:|
            \__.  /      o  \/'
             |   (       O   )
-   /~~~~\    \  \         /
-  | |~~\ |     )  ~------~\
- / |  | |   /     ____ /~~~)\
-(_/   | | |     /    |    ( |
-       | | |     \    /   __)/ \
-       \  \ \      \/    /' \   \
-         \  \|\        /   | |\___|
-           \ |  \____/     | |
-           /^~>  \        _/ <
-          |  |         \       \
-          |  | \        \        \
-          -^-\  \       |        )
-               \_______/^\______/
+              \  \         /
+               )  ~------~\
+            Hello %s!
 
 `
 
@@ -37,6 +28,6 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Printf("Hello %s!\n %s", user.Username, WELCOME_TEXT)
+	fmt.Printf(WELCOME_TEXT, user.Username)
 	repl.Start(os.Stdin, os.Stdout)
 }

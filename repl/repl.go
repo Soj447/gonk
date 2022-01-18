@@ -11,7 +11,7 @@ import (
 	"github.com/Soj447/gonk/parser"
 )
 
-const PS1 = "~>"
+const PS1 = "[In]> "
 
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
@@ -36,6 +36,7 @@ func Start(in io.Reader, out io.Writer) {
 
 		evaluated := evaluator.Eval(program, env)
 		if evaluated != nil {
+			io.WriteString(out, "[Out]> ")
 			io.WriteString(out, evaluated.Inspect())
 			io.WriteString(out, "\n")
 		}

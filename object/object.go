@@ -156,31 +156,6 @@ type HashKey struct {
 	Type  ObjectType
 	Value uint64
 }
-
-func (i *Integer) HashKey() HashKey {
-	return HashKey{Type: i.Type(), Value: uint64(i.Value)}
-}
-
-func (b *Boolean) HashKey() HashKey {
-	var value uint64
-
-	if b.Value {
-		value = 1
-	} else {
-		value = 0
-	}
-
-	return HashKey{Type: b.Type(), Value: value}
-}
-
-func (s *String) HashKey() HashKey {
-	// TODO: Change to SipHash
-	h := fnv.New64a()
-	h.Write([]byte(s.Value))
-
-	return HashKey{Type: s.Type(), Value: h.Sum64()}
-}
-
 type HashPair struct {
 	Key   Object
 	Value Object
@@ -209,4 +184,28 @@ func (h *Hash) Inspect() string {
 
 type Hashable interface {
 	HashKey() HashKey
+}
+
+func (i *Integer) HashKey() HashKey {
+	return HashKey{Type: i.Type(), Value: uint64(i.Value)}
+}
+
+func (b *Boolean) HashKey() HashKey {
+	var value uint64
+
+	if b.Value {
+		value = 1
+	} else {
+		value = 0
+	}
+
+	return HashKey{Type: b.Type(), Value: value}
+}
+
+func (s *String) HashKey() HashKey {
+	// TODO: Change to SipHash
+	h := fnv.New64a()
+	h.Write([]byte(s.Value))
+
+	return HashKey{Type: s.Type(), Value: h.Sum64()}
 }

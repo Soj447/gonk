@@ -119,6 +119,13 @@ func (vm *VM) Run() error {
 			ip += 2
 
 			vm.globals[globalIndex] = vm.pop()
+		case code.OpArray:
+			arrayLength := int(code.ReadUint16(vm.instructions[ip+1:]))
+			ip += 2
+
+			array := vm.buildArray(vm.sp-arrayLength, vm.sp)
+			vm.sp = vm.sp - arrayLength
+			vm.push(array)
 		}
 	}
 	return nil
@@ -138,6 +145,16 @@ func (vm *VM) pop() object.Object {
 	obj := vm.stack[vm.sp-1]
 	vm.sp--
 	return obj
+}
+
+func (vm *VM) buildArray(start, end int) *object.Array {
+	elements := make([]object.Object, end-start)
+
+	for i := start; i < end; i++ {
+		elements[i-start] = vm.stack[i]
+	}
+
+	return &object.Array{Elements: elements}
 }
 
 func (vm *VM) executeBinaryOperation(op code.Opcode) error {

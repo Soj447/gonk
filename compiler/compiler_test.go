@@ -274,6 +274,50 @@ func TestStringExpressions(t *testing.T) {
 	runCompilerTests(t, tests)
 }
 
+func TestArrayLiterals(t *testing.T) {
+	tests := []compilerTestCase{
+		{
+			"[]",
+			[]interface{}{},
+			[]code.Instructions{
+				code.Make(code.OpArray, 0),
+				code.Make(code.OpPop),
+			},
+		},
+		{
+			"[47, 23, 59]",
+			[]interface{}{47, 23, 59},
+			[]code.Instructions{
+				code.Make(code.OpConstant, 0),
+				code.Make(code.OpConstant, 1),
+				code.Make(code.OpConstant, 2),
+				code.Make(code.OpArray, 3),
+				code.Make(code.OpPop),
+			},
+		},
+		{
+			"[1 + 5, 3 * 6, 42 / 7, 6]",
+			[]interface{}{1, 5, 3, 6, 42, 7, 6},
+			[]code.Instructions{
+				code.Make(code.OpConstant, 0),
+				code.Make(code.OpConstant, 1),
+				code.Make(code.OpAdd),
+				code.Make(code.OpConstant, 2),
+				code.Make(code.OpConstant, 3),
+				code.Make(code.OpMul),
+				code.Make(code.OpConstant, 4),
+				code.Make(code.OpConstant, 5),
+				code.Make(code.OpDiv),
+				code.Make(code.OpConstant, 6),
+				code.Make(code.OpArray, 4),
+				code.Make(code.OpPop),
+			},
+		},
+	}
+
+	runCompilerTests(t, tests)
+}
+
 func runCompilerTests(t *testing.T, tests []compilerTestCase) {
 	for _, tt := range tests {
 		program := parse(tt.input)

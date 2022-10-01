@@ -105,6 +105,16 @@ func TestStringExpressions(t *testing.T) {
 	runVmTests(t, tests)
 }
 
+func TestArrayLiterals(t *testing.T) {
+	tests := []vmTestCase{
+		{"[]", []int{}},
+		{"[1, 2, 3]", []int{1, 2, 3}},
+		{"[2 * 9, 66 - 1]", []int{18, 65}},
+	}
+
+	runVmTests(t, tests)
+}
+
 func runVmTests(t *testing.T, tests []vmTestCase) {
 	for _, tt := range tests {
 		program := parse(tt.input)
@@ -142,6 +152,11 @@ func testExpectObject(t *testing.T, expected interface{}, actual object.Object) 
 		err := testBooleanObject(bool(expected), actual)
 		if err != nil {
 			t.Errorf("testBooleanObject error: %s", err)
+		}
+	case []int:
+		err := testArrayObject(expected, actual)
+		if err != nil {
+			t.Errorf("testArrayObject error: %s", err)
 		}
 	case *object.Null:
 		if actual != Null {
@@ -188,6 +203,24 @@ func testBooleanObject(expected bool, actual object.Object) error {
 	if result.Value != expected {
 		return fmt.Errorf("object has wrong value. got=%t, want=%t",
 			result.Value, expected)
+	}
+	return nil
+}
+
+func testArrayObject(expected []int, actual object.Object) error {
+	result, ok := actual.(*object.Array)
+	if !ok {
+		return fmt.Errorf("object is not an Array. got=%t (%+v)", actual, actual)
+	}
+	if len(result.Elements) != len(expected) {
+		return fmt.Errorf("wrong number of elements. got=%d, want=%d", len(result.Elements), len(expected))
+	}
+
+	for i, element := range expected {
+		err := testIntegerObject(int64(element), result.Elements[i])
+		if err != nil {
+			return fmt.Errorf("testIntegerObject failed: %s", err)
+		}
 	}
 	return nil
 }

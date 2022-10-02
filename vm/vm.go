@@ -126,6 +126,20 @@ func (vm *VM) Run() error {
 			array := vm.buildArray(vm.sp-arrayLength, vm.sp)
 			vm.sp = vm.sp - arrayLength
 			vm.push(array)
+		case code.OpHash:
+			hashLength := int(code.ReadUint16(vm.instructions[ip+1:]))
+			ip += 2
+
+			hashMap, err := vm.buildHash(vm.sp-hashLength, vm.sp)
+			if err != nil {
+				return err
+			}
+
+			vm.sp = vm.sp - hashLength
+			err = vm.push(hashMap)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
@@ -155,6 +169,26 @@ func (vm *VM) buildArray(start, end int) *object.Array {
 	}
 
 	return &object.Array{Elements: elements}
+}
+
+func (vm *VM) buildHash(start, end int) (*object.Hash, error) {
+	hashPairs := make(map[object.HashKey]object.HashPair)
+
+	for i := start; i < end; i += 2 {
+		key := vm.stack[i]
+		value := vm.stack[i+1]
+
+		hashPair := object.HashPair{Key: key, Value: value}
+
+		hashKey, ok := key.(object.Hashable)
+		if !ok {
+			return nil, fmt.Errorf("key=%s is not hashable", key.Type())
+		}
+
+		hashPairs[hashKey.HashKey()] = hashPair
+	}
+
+	return &object.Hash{Pairs: hashPairs}, nil
 }
 
 func (vm *VM) executeBinaryOperation(op code.Opcode) error {
